@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CRM Fibra Óptica</title>
+
+    <link rel="stylesheet" href="panel.css">
+</head>
+
+<body>
+
+    <div class="crm">
+
+        <!-- MENÚ LATERAL -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-logo">M</div>
+
+                <div>
+                    <h2>CRM Fibra</h2>
+                    <span>Panel de ventas</span>
+                </div>
+            </div>
+
+            <nav>
+
+                <button class="menu active" onclick="mostrarSeccion('inicio')">
+                    🏠 Inicio
+                </button>
+
+                <button class="menu" onclick="mostrarSeccion('clientes')">
+                    👥 Clientes
+                </button>
+
+                <button class="menu" onclick="mostrarSeccion('seguimiento')">
+                    🔥 Seguimiento
+                </button>
+
+                <button class="menu" onclick="mostrarSeccion('ventas')">
+                    ✅ Ventas
+                </button>
+
+                <button class="menu" onclick="mostrarSeccion('estadisticas')">
+                    📊 Estadísticas
+                </button>
+
+            </nav>
+
+            <button class="cerrar" onclick="cerrarSesion()">
+                🚪 Cerrar sesión
+            </button>
+
+        </aside>
+
+
+        <!-- CONTENIDO -->
+
+        <main class="contenido">
+
+            <header class="header">
+
+                <div>
+                    <h1>¡Hola, Agustina! 👋</h1>
+                    <p>Bienvenida a tu panel de gestión.</p>
+                </div>
+
+                <div class="usuario">
+                    👤 Agustina
+                </div>
+
+            </header>
+
+
+            <!-- INICIO -->
+
+            <section id="inicio" class="seccion">
+
+                <h2>Resumen</h2>
+
+                <div class="tarjetas">
+
+                    <div class="tarjeta">
+                        <span>👥</span>
+                        <div>
+                            <p>Total clientes</p>
+                            <strong id="totalClientes">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="tarjeta">
+                        <span>🔥</span>
+                        <div>
+                            <p>Interesados</p>
+                            <strong id="interesados">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="tarjeta">
+                        <span>🟡</span>
+                        <div>
+                            <p>Seguimientos</p>
+                            <strong id="seguimientos">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="tarjeta">
+                        <span>✅</span>
+                        <div>
+                            <p>Ventas</p>
+                            <strong id="ventas">0</strong>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="bienvenida">
+
+                    <h2>CRM Fibra Óptica</h2>
+
+                    <p>
+                        Desde este panel vas a poder administrar tus clientes,
+                        hacer seguimientos y registrar tus ventas.
+                    </p>
+
+                    <button onclick="mostrarSeccion('clientes')">
+                        👥 Ver clientes
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- CLIENTES -->
+
+            <section id="clientes" class="seccion oculto">
+
+                <div class="titulo-seccion">
+
+                    <div>
+                        <h2>Clientes</h2>
+                        <p>Administrá tus contactos.</p>
+                    </div>
+
+                    <button onclick="abrirFormulario()">
+                        ➕ Agregar cliente
+                    </button>
+
+                </div>
+
+
+                <div class="busqueda">
+
+                    <input
+                        type="text"
+                        id="buscar"
+                        placeholder="🔎 Buscar por nombre, teléfono o localidad..."
+                        onkeyup="buscarClientes()"
+                    >
+
+                </div>
+
+
+                <div id="listaClientes" class="clientes-grid">
+
+                    <div class="cliente-vacio">
+
+                        <div>👥</div>
+
+                        <h3>No hay clientes todavía</h3>
+
+                        <p>
+                            Agregá tu primer cliente para comenzar.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- SEGUIMIENTO -->
+
+            <section id="seguimiento" class="seccion oculto">
+
+                <h2>🔥 Seguimiento</h2>
+
+                <p class="texto-ayuda">
+                    Clientes que necesitan seguimiento.
+                </p>
+
+                <div id="listaSeguimiento"></div>
+
+            </section>
+
+
+            <!-- VENTAS -->
+
+            <section id="ventas" class="seccion oculto">
+
+                <h2>✅ Ventas realizadas</h2>
+
+                <p class="texto-ayuda">
+                    Acá aparecerán las ventas realizadas.
+                </p>
+
+                <div id="listaVentas"></div>
+
+            </section>
+
+
+            <!-- ESTADÍSTICAS -->
+
+            <section id="estadisticas" class="seccion oculto">
+
+                <h2>📊 Estadísticas</h2>
+
+                <div class="estadisticas">
+
+                    <div>
+                        <span>Clientes</span>
+                        <strong id="statClientes">0</strong>
+                    </div>
+
+                    <div>
+                        <span>Interesados</span>
+                        <strong id="statInteresados">0</strong>
+                    </div>
+
+                    <div>
+                        <span>Seguimientos</span>
+                        <strong id="statSeguimientos">0</strong>
+                    </div>
+
+                    <div>
+                        <span>Ventas</span>
+                        <strong id="statVentas">0</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <!-- VENTANA AGREGAR CLIENTE -->
+
+    <div id="modal" class="modal oculto">
+
+        <div class="modal-contenido">
+
+            <div class="modal-header">
+
+                <div>
+                    <h2>➕ Nuevo cliente</h2>
+                    <p>Completá los datos del contacto.</p>
+                </div>
+
+                <button class="cerrar-modal" onclick="cerrarFormulario()">
+                    ✕
+                </button>
+
+            </div>
+
+
+            <form id="clienteForm">
+
+                <div class="form-grid">
+
+                    <div>
+                        <label>Nombre y apellido</label>
+
+                        <input
+                            type="text"
+                            id="nombre"
+                            required
+                        >
+                    </div>
+
+
+                    <div>
+                        <label>Teléfono</label>
+
+                        <input
+                            type="text"
+                            id="telefono"
+                            required
+                        >
+                    </div>
+
+
+                    <div>
+                        <label>DNI</label>
+
+                        <input
+                            type="text"
+                            id="dni"
+                        >
+                    </div>
+
+
+                    <div>
+                        <label>Localidad</label>
+
+                        <input
+                            type="text"
+                            id="localidad"
+                        >
+                    </div>
+
+
+                    <div>
+                        <label>Dirección</label>
+
+                        <input
+                            type="text"
+                            id="direccion"
+                        >
+                    </div>
+
+
+                    <div>
+                        <label>Plan</label>
+
+                        <select id="plan">
+
+                            <option value="300 Megas">
+                                300 Megas
+                            </option>
+
+                            <option value="600 Megas">
+                                600 Megas
+                            </option>
+
+                            <option value="1 GB">
+                                1 GB
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div>
+                        <label>Estado</label>
+
+                        <select id="estado">
+
+                            <option value="🔥 Caliente">
+                                🔥 Caliente
+                            </option>
+
+                            <option value="🟡 Seguimiento">
+                                🟡 Seguimiento
+                            </option>
+
+                            <option value="🟠 No responde">
+                                🟠 No responde
+                            </option>
+
+                            <option value="✅ Venta">
+                                ✅ Venta
+                            </option>
+
+                            <option value="❌ No interesado">
+                                ❌ No interesado
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="campo-completo">
+
+                        <label>Observaciones</label>
+
+                        <textarea
+                            id="observaciones"
+                            rows="4"
+                            placeholder="Ej: pidió información, llamar mañana..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <button type="submit">
+                    💾 Guardar cliente
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="panel.js"></script>
+
+</body>
+
+</html>
