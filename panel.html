@@ -33,7 +33,6 @@
 
             </div>
 
-
             <nav>
 
                 <button class="menu active" onclick="mostrarSeccion('inicio')">
@@ -58,7 +57,6 @@
 
             </nav>
 
-
             <button class="cerrar" onclick="cerrarSesion()">
                 🚪 Cerrar sesión
             </button>
@@ -76,8 +74,6 @@
 
                 <div>
 
-                    <!-- EL NOMBRE SE CARGARÁ DESDE SUPABASE -->
-
                     <h1 id="saludoUsuario">
                         ¡Hola! 👋
                     </h1>
@@ -87,9 +83,6 @@
                     </p>
 
                 </div>
-
-
-                <!-- USUARIO ACTUAL -->
 
                 <div class="usuario" id="usuarioNombre">
                     👤 Cargando...
@@ -106,7 +99,6 @@
 
                 <h2>Resumen</h2>
 
-
                 <div class="tarjetas">
 
                     <div class="tarjeta">
@@ -114,13 +106,11 @@
                         <span>👥</span>
 
                         <div>
-
                             <p>Total clientes</p>
 
                             <strong id="totalClientes">
                                 0
                             </strong>
-
                         </div>
 
                     </div>
@@ -131,13 +121,11 @@
                         <span>🔥</span>
 
                         <div>
-
                             <p>Interesados</p>
 
                             <strong id="interesados">
                                 0
                             </strong>
-
                         </div>
 
                     </div>
@@ -148,13 +136,11 @@
                         <span>🟡</span>
 
                         <div>
-
                             <p>Seguimientos</p>
 
                             <strong id="seguimientos">
                                 0
                             </strong>
-
                         </div>
 
                     </div>
@@ -165,13 +151,11 @@
                         <span>✅</span>
 
                         <div>
-
                             <p>Ventas</p>
 
                             <strong id="ventas">
                                 0
                             </strong>
-
                         </div>
 
                     </div>
@@ -386,7 +370,7 @@
 
 
     <!-- ===============================
-         VENTANA AGREGAR CLIENTE
+         MODAL CLIENTE
     ================================ -->
 
     <div
@@ -400,7 +384,7 @@
 
                 <div>
 
-                    <h2>
+                    <h2 id="tituloModal">
                         ➕ Nuevo cliente
                     </h2>
 
@@ -422,6 +406,14 @@
 
 
             <form id="clienteForm">
+
+                <!-- ID OCULTO PARA EDICIÓN -->
+
+                <input
+                    type="hidden"
+                    id="clienteId"
+                >
+
 
                 <div class="form-grid">
 
@@ -508,6 +500,78 @@
                     </div>
 
 
+                    <!-- ENTRE CALLES -->
+
+                    <div>
+
+                        <label>
+                            Entre calles
+                        </label>
+
+                        <input
+                            type="text"
+                            id="entre_calles"
+                            placeholder="Ej: San Martín y Belgrano"
+                        >
+
+                    </div>
+
+
+                    <!-- DEPARTAMENTO -->
+
+                    <div>
+
+                        <label>
+                            ¿Es departamento?
+                        </label>
+
+                        <select id="es_departamento">
+
+                            <option value="false">
+                                No
+                            </option>
+
+                            <option value="true">
+                                Sí
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- NÚMERO DE DEPARTAMENTO -->
+
+                    <div>
+
+                        <label>
+                            N.º departamento
+                        </label>
+
+                        <input
+                            type="text"
+                            id="numero_departamento"
+                        >
+
+                    </div>
+
+
+                    <!-- PISO -->
+
+                    <div>
+
+                        <label>
+                            Piso
+                        </label>
+
+                        <input
+                            type="text"
+                            id="piso"
+                        >
+
+                    </div>
+
+
                     <!-- PLAN -->
 
                     <div>
@@ -535,12 +599,80 @@
                     </div>
 
 
+                    <!-- MEDIO DE PAGO -->
+
+                    <div>
+
+                        <label>
+                            Medio de pago
+                        </label>
+
+                        <select id="medio_pago">
+
+                            <option value="">
+                                Seleccionar
+                            </option>
+
+                            <option value="Efectivo">
+                                Efectivo
+                            </option>
+
+                            <option value="Tarjeta">
+                                Tarjeta
+                            </option>
+
+                            <option value="Débito">
+                                Débito
+                            </option>
+
+                            <option value="Transferencia">
+                                Transferencia
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- BANCO -->
+
+                    <div>
+
+                        <label>
+                            Banco
+                        </label>
+
+                        <input
+                            type="text"
+                            id="banco"
+                        >
+
+                    </div>
+
+
+                    <!-- ÚLTIMOS 4 -->
+
+                    <div>
+
+                        <label>
+                            Últimos 4 de tarjeta
+                        </label>
+
+                        <input
+                            type="text"
+                            id="ultimos_4_tarjeta"
+                            maxlength="4"
+                        >
+
+                    </div>
+
+
                     <!-- ESTADO -->
 
                     <div>
 
                         <label>
-                            Estado
+                            Estado de la venta
                         </label>
 
                         <select id="estado">
@@ -561,10 +693,6 @@
                                 🔴 No pasa validación
                             </option>
 
-                            <option value="🔵 Auditado">
-                                🔵 Auditado
-                            </option>
-
                         </select>
 
                     </div>
@@ -582,6 +710,54 @@
                             id="observaciones"
                             rows="4"
                             placeholder="Ej: pidió información, llamar mañana..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- ===============================
+                         AUDITORÍA
+                    ================================ -->
+
+                    <div
+                        id="bloqueAuditoria"
+                        class="campo-completo"
+                    >
+
+                        <h3>
+                            🔎 Auditoría
+                        </h3>
+
+                        <p>
+                            Esta información será utilizada por administración.
+                        </p>
+
+
+                        <label>
+                            Estado de auditoría
+                        </label>
+
+                        <select id="auditado">
+
+                            <option value="false">
+                                ⚪ No auditado
+                            </option>
+
+                            <option value="true">
+                                🔵 Auditado
+                            </option>
+
+                        </select>
+
+
+                        <label>
+                            Observaciones de auditoría
+                        </label>
+
+                        <textarea
+                            id="observaciones_auditoria"
+                            rows="3"
+                            placeholder="Ej: documentación verificada correctamente..."
                         ></textarea>
 
                     </div>
