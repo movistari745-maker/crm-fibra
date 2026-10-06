@@ -18,10 +18,12 @@ const supabaseClient = supabase.createClient(
 // ==========================================
 
 let usuarioActual = null;
+let perfilActual = null;
+let clientes = [];
 
 
 // ==========================================
-// CARGAR USUARIO DESDE SUPABASE
+// CARGAR USUARIO
 // ==========================================
 
 async function cargarUsuario() {
@@ -39,8 +41,7 @@ async function cargarUsuario() {
 
             window.location.href = "index.html";
 
-            return;
-
+            return false;
         }
 
         usuarioActual = user;
@@ -52,12 +53,14 @@ async function cargarUsuario() {
         // BUSCAR PERFIL
         // ==========================================
 
-        const { data: perfil, error: errorPerfil } =
-            await supabaseClient
-                .from("profiles")
-                .select("*")
-                .eq("id", user.id)
-                .single();
+        const {
+            data: perfil,
+            error: errorPerfil
+        } = await supabaseClient
+            .from("perfiles")
+            .select("*")
+            .eq("id", user.id)
+            .single();
 
 
         if (errorPerfil) {
@@ -67,8 +70,6 @@ async function cargarUsuario() {
                 errorPerfil
             );
 
-            // Si no encuentra perfil,
-            // usamos el nombre del metadata
             const nombre =
                 user.user_metadata?.nombre ||
                 user.user_metadata?.name ||
@@ -76,17 +77,14 @@ async function cargarUsuario() {
 
             mostrarNombreUsuario(nombre);
 
-            return;
-
+            return true;
         }
 
 
+        perfilActual = perfil;
+
         console.log("Perfil encontrado:", perfil);
 
-
-        // ==========================================
-        // OBTENER NOMBRE
-        // ==========================================
 
         const nombre =
             perfil.nombre ||
@@ -98,6 +96,10 @@ async function cargarUsuario() {
 
         mostrarNombreUsuario(nombre);
 
+        console.log("Rol del usuario:", perfil.rol);
+
+        return true;
+
     }
 
     catch (error) {
@@ -107,8 +109,8 @@ async function cargarUsuario() {
             error
         );
 
+        return false;
     }
-
 }
 
 
@@ -144,23 +146,97 @@ function mostrarNombreUsuario(nombre) {
 
 
 // ==========================================
-// DATOS DE CLIENTES
+// CARGAR CLIENTES DESDE SUPABASE
 // ==========================================
 
-let clientes =
-    JSON.parse(
-        localStorage.getItem("clientesCRM")
-    ) || [];
+async function cargarClientes() {
+
+    try {
+
+        let consulta =
+            supabaseClient
+                .from("clientes")
+                .select("*")
+                .order("fecha_carga", {
+                    ascending: false
+                });
+
+
+        // ==========================================
+        // VENDEDORES
+        // ==========================================
+
+        if (
+            perfilActual &&
+            perfilActual.rol !== "admin"
+        ) {
+
+            consulta =
+                consulta.eq(
+                    "vendedor_id",
+                    usuarioActual.id
+                );
+
+        }
+
+
+        const {
+            data,
+            error
+        } = await consulta;
+
+
+        if (error) {
+
+            console.error(
+                "Error cargando clientes:",
+                error
+            );
+
+            alert(
+                "❌ No se pudieron cargar los clientes."
+            );
+
+            return;
+
+        }
+
+
+        clientes = data || [];
+
+        console.log(
+            "Clientes cargados:",
+            clientes
+        );
+
+
+        mostrarClientes();
+
+        actualizarTodo();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error:",
+            error
+        );
+
+    }
+
+}
 
 
 // ==========================================
-// CAMBIAR DE SECCIÓN
+// CAMBIAR SECCIÓN
 // ==========================================
 
 function mostrarSeccion(nombre) {
 
     const secciones =
         document.querySelectorAll(".seccion");
+
 
     secciones.forEach(function(seccion) {
 
@@ -172,6 +248,7 @@ function mostrarSeccion(nombre) {
     const seleccionada =
         document.getElementById(nombre);
 
+
     if (seleccionada) {
 
         seleccionada.classList.remove("oculto");
@@ -181,6 +258,7 @@ function mostrarSeccion(nombre) {
 
     const botones =
         document.querySelectorAll(".menu");
+
 
     botones.forEach(function(boton) {
 
@@ -215,10 +293,15 @@ function mostrarSeccion(nombre) {
 
 function abrirFormulario() {
 
-    document
-        .getElementById("modal")
-        .classList
-        .remove("oculto");
+    const modal =
+        document.getElementById("modal");
+
+
+    if (modal) {
+
+        modal.classList.remove("oculto");
+
+    }
 
 }
 
@@ -229,60 +312,97 @@ function abrirFormulario() {
 
 function cerrarFormulario() {
 
-    document
-        .getElementById("modal")
-        .classList
-        .add("oculto");
+    const modal =
+        document.getElementById("modal");
 
 
-    document
-        .getElementById("clienteForm")
-        .reset();
+    if (modal) {
+
+        modal.classList.add("oculto");
+
+    }
+
+
+    const formulario =
+        document.getElementById("clienteForm");
+
+
+    if (formulario) {
+
+        formulario.reset();
+
+    }
 
 }
 
 
 // ==========================================
-// GUARDAR CLIENTE
+// GUARDAR CLIENTE EN SUPABASE
 // ==========================================
 
-document
-    .getElementById("clienteForm")
-    .addEventListener(
+const formularioCliente =
+    document.getElementById("clienteForm");
+
+
+if (formularioCliente) {
+
+    formularioCliente.addEventListener(
         "submit",
-        function(event) {
+        async function(event) {
 
             event.preventDefault();
 
 
+            // ==========================================
+            // VERIFICAR USUARIO
+            // ==========================================
+
+            if (!usuarioActual) {
+
+                alert(
+                    "❌ No se encontró el usuario actual."
+                );
+
+                return;
+
+            }
+
+
+            // ==========================================
+            // DATOS DEL CLIENTE
+            // ==========================================
+
             const cliente = {
 
-                id: Date.now(),
-
-                nombre:
+                nombre_apellido:
                     document
                         .getElementById("nombre")
-                        .value,
+                        .value
+                        .trim(),
 
                 telefono:
                     document
                         .getElementById("telefono")
-                        .value,
+                        .value
+                        .trim(),
 
                 dni:
                     document
                         .getElementById("dni")
-                        .value,
+                        .value
+                        .trim(),
 
                 localidad:
                     document
                         .getElementById("localidad")
-                        .value,
+                        .value
+                        .trim(),
 
-                direccion:
+                calle:
                     document
                         .getElementById("direccion")
-                        .value,
+                        .value
+                        .trim(),
 
                 plan:
                     document
@@ -298,37 +418,67 @@ document
                     document
                         .getElementById("observaciones")
                         .value
+                        .trim(),
+
+                vendedor_id:
+                    usuarioActual.id
 
             };
 
 
-            clientes.push(cliente);
+            console.log(
+                "Cliente a guardar:",
+                cliente
+            );
 
-            guardarClientes();
+
+            // ==========================================
+            // GUARDAR EN SUPABASE
+            // ==========================================
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("clientes")
+                .insert([cliente])
+                .select();
+
+
+            if (error) {
+
+                console.error(
+                    "Error guardando cliente:",
+                    error
+                );
+
+                alert(
+                    "❌ No se pudo guardar el cliente.\n\n" +
+                    error.message
+                );
+
+                return;
+
+            }
+
+
+            console.log(
+                "Cliente guardado:",
+                data
+            );
+
+
+            alert(
+                "✅ Cliente guardado correctamente."
+            );
+
 
             cerrarFormulario();
 
-            mostrarClientes();
 
-            actualizarTodo();
-
-            alert(
-                "Cliente guardado correctamente ✅"
-            );
+            await cargarClientes();
 
         }
-    );
-
-
-// ==========================================
-// GUARDAR EN LOCALSTORAGE
-// ==========================================
-
-function guardarClientes() {
-
-    localStorage.setItem(
-        "clientesCRM",
-        JSON.stringify(clientes)
     );
 
 }
@@ -352,7 +502,7 @@ function mostrarClientes(lista = clientes) {
     contenedor.innerHTML = "";
 
 
-    if (lista.length === 0) {
+    if (!lista.length) {
 
         contenedor.innerHTML = `
 
@@ -388,15 +538,15 @@ function mostrarClientes(lista = clientes) {
         tarjeta.innerHTML = `
 
             <span class="estado">
-                ${cliente.estado}
+                ${cliente.estado || "🟡 Pendiente de verificación"}
             </span>
 
             <h3>
-                ${cliente.nombre}
+                ${cliente.nombre_apellido || "-"}
             </h3>
 
             <p>
-                📞 ${cliente.telefono}
+                📞 ${cliente.telefono || "-"}
             </p>
 
             <p>
@@ -408,11 +558,11 @@ function mostrarClientes(lista = clientes) {
             </p>
 
             <p>
-                🏠 ${cliente.direccion || "-"}
+                🏠 ${cliente.calle || "-"}
             </p>
 
             <p>
-                📦 ${cliente.plan}
+                📦 ${cliente.plan || "-"}
             </p>
 
             ${
@@ -424,7 +574,7 @@ function mostrarClientes(lista = clientes) {
             }
 
             <button
-                onclick="eliminarCliente(${cliente.id})"
+                onclick="eliminarCliente('${cliente.id}')"
                 style="
                     background:#ffe8e8;
                     color:#d62828;
@@ -450,11 +600,17 @@ function mostrarClientes(lista = clientes) {
 
 function buscarClientes() {
 
+    const campo =
+        document.getElementById("buscar");
+
+
+    if (!campo) return;
+
+
     const texto =
-        document
-            .getElementById("buscar")
-            .value
-            .toLowerCase();
+        campo.value
+            .toLowerCase()
+            .trim();
 
 
     const resultados =
@@ -462,7 +618,7 @@ function buscarClientes() {
 
             return (
 
-                (cliente.nombre || "")
+                (cliente.nombre_apellido || "")
                     .toLowerCase()
                     .includes(texto)
 
@@ -475,6 +631,12 @@ function buscarClientes() {
                 ||
 
                 (cliente.localidad || "")
+                    .toLowerCase()
+                    .includes(texto)
+
+                ||
+
+                (cliente.dni || "")
                     .toLowerCase()
                     .includes(texto)
 
@@ -492,7 +654,7 @@ function buscarClientes() {
 // ELIMINAR CLIENTE
 // ==========================================
 
-function eliminarCliente(id) {
+async function eliminarCliente(id) {
 
     const confirmar =
         confirm(
@@ -503,17 +665,50 @@ function eliminarCliente(id) {
     if (!confirmar) return;
 
 
-    clientes =
-        clientes.filter(function(cliente) {
+    try {
 
-            return cliente.id !== id;
+        const {
+            error
+        } = await supabaseClient
+            .from("clientes")
+            .delete()
+            .eq("id", id);
 
-        });
+
+        if (error) {
+
+            console.error(
+                "Error eliminando cliente:",
+                error
+            );
+
+            alert(
+                "❌ No se pudo eliminar el cliente.\n\n" +
+                error.message
+            );
+
+            return;
+
+        }
 
 
-    guardarClientes();
+        alert(
+            "🗑️ Cliente eliminado correctamente."
+        );
 
-    actualizarTodo();
+
+        await cargarClientes();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error:",
+            error
+        );
+
+    }
 
 }
 
@@ -531,7 +726,10 @@ function actualizarTodo() {
     const interesados =
         clientes.filter(function(cliente) {
 
-            return cliente.estado === "🔥 Caliente";
+            return (
+                cliente.estado ===
+                "🔥 Caliente"
+            );
 
         }).length;
 
@@ -539,7 +737,14 @@ function actualizarTodo() {
     const seguimientos =
         clientes.filter(function(cliente) {
 
-            return cliente.estado === "🟡 Seguimiento";
+            return (
+                cliente.estado ===
+                "🟡 Pendiente de verificación"
+                ||
+
+                cliente.estado ===
+                "🟠 No contesta"
+            );
 
         }).length;
 
@@ -547,25 +752,34 @@ function actualizarTodo() {
     const ventas =
         clientes.filter(function(cliente) {
 
-            return cliente.estado === "✅ Venta";
+            return (
+                cliente.estado ===
+                "🟢 Vendido"
+            );
 
         }).length;
 
 
-    const ids = [
+    const idsTotal = [
 
         "totalClientes",
         "statClientes"
 
     ];
 
-    ids.forEach(function(id) {
+
+    idsTotal.forEach(function(id) {
 
         const elemento =
             document.getElementById(id);
 
-        if (elemento)
-            elemento.textContent = total;
+
+        if (elemento) {
+
+            elemento.textContent =
+                total;
+
+        }
 
     });
 
@@ -577,13 +791,19 @@ function actualizarTodo() {
 
     ];
 
+
     interesadosIds.forEach(function(id) {
 
         const elemento =
             document.getElementById(id);
 
-        if (elemento)
-            elemento.textContent = interesados;
+
+        if (elemento) {
+
+            elemento.textContent =
+                interesados;
+
+        }
 
     });
 
@@ -595,13 +815,19 @@ function actualizarTodo() {
 
     ];
 
+
     seguimientosIds.forEach(function(id) {
 
         const elemento =
             document.getElementById(id);
 
-        if (elemento)
-            elemento.textContent = seguimientos;
+
+        if (elemento) {
+
+            elemento.textContent =
+                seguimientos;
+
+        }
 
     });
 
@@ -613,18 +839,22 @@ function actualizarTodo() {
 
     ];
 
+
     ventasIds.forEach(function(id) {
 
         const elemento =
             document.getElementById(id);
 
-        if (elemento)
-            elemento.textContent = ventas;
+
+        if (elemento) {
+
+            elemento.textContent =
+                ventas;
+
+        }
 
     });
 
-
-    mostrarClientes();
 
     mostrarSeguimientos();
 
@@ -654,17 +884,12 @@ function mostrarSeguimientos() {
             return (
 
                 cliente.estado ===
-                "🔥 Caliente"
+                "🟡 Pendiente de verificación"
 
                 ||
 
                 cliente.estado ===
-                "🟡 Seguimiento"
-
-                ||
-
-                cliente.estado ===
-                "🟠 No responde"
+                "🟠 No contesta"
 
             );
 
@@ -674,7 +899,7 @@ function mostrarSeguimientos() {
     contenedor.innerHTML = "";
 
 
-    if (lista.length === 0) {
+    if (!lista.length) {
 
         contenedor.innerHTML = `
 
@@ -716,11 +941,11 @@ function mostrarSeguimientos() {
             </span>
 
             <h3>
-                ${cliente.nombre}
+                ${cliente.nombre_apellido || "-"}
             </h3>
 
             <p>
-                📞 ${cliente.telefono}
+                📞 ${cliente.telefono || "-"}
             </p>
 
             <p>
@@ -728,7 +953,7 @@ function mostrarSeguimientos() {
             </p>
 
             <p>
-                📦 ${cliente.plan}
+                📦 ${cliente.plan || "-"}
             </p>
 
         `;
@@ -759,7 +984,10 @@ function mostrarVentas() {
     const lista =
         clientes.filter(function(cliente) {
 
-            return cliente.estado === "✅ Venta";
+            return (
+                cliente.estado ===
+                "🟢 Vendido"
+            );
 
         });
 
@@ -767,7 +995,7 @@ function mostrarVentas() {
     contenedor.innerHTML = "";
 
 
-    if (lista.length === 0) {
+    if (!lista.length) {
 
         contenedor.innerHTML = `
 
@@ -805,15 +1033,15 @@ function mostrarVentas() {
         tarjeta.innerHTML = `
 
             <span class="estado">
-                ✅ Venta
+                🟢 Vendido
             </span>
 
             <h3>
-                ${cliente.nombre}
+                ${cliente.nombre_apellido || "-"}
             </h3>
 
             <p>
-                📞 ${cliente.telefono}
+                📞 ${cliente.telefono || "-"}
             </p>
 
             <p>
@@ -821,7 +1049,7 @@ function mostrarVentas() {
             </p>
 
             <p>
-                📦 ${cliente.plan}
+                📦 ${cliente.plan || "-"}
             </p>
 
         `;
@@ -856,11 +1084,14 @@ document.addEventListener(
     "DOMContentLoaded",
     async function() {
 
-        await cargarUsuario();
+        const usuarioCargado =
+            await cargarUsuario();
 
-        mostrarClientes();
 
-        actualizarTodo();
+        if (!usuarioCargado) return;
+
+
+        await cargarClientes();
 
     }
 );
