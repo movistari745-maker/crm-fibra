@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>CRM Fibra Óptica</title>
+    <title>VANTIX CRM</title>
 
     <link rel="stylesheet" href="panel.css">
 </head>
@@ -14,18 +14,25 @@
 
     <div class="crm">
 
-        <!-- MENÚ LATERAL -->
+        <!-- ===============================
+             MENÚ LATERAL
+        ================================ -->
 
         <aside class="sidebar">
 
             <div class="brand">
-                <div class="brand-logo">M</div>
+
+                <div class="brand-logo">
+                    V
+                </div>
 
                 <div>
-                    <h2>CRM Fibra</h2>
-                    <span>Panel de ventas</span>
+                    <h2>VANTIX</h2>
+                    <span>CRM de gestión</span>
                 </div>
+
             </div>
+
 
             <nav>
 
@@ -51,6 +58,7 @@
 
             </nav>
 
+
             <button class="cerrar" onclick="cerrarSesion()">
                 🚪 Cerrar sesión
             </button>
@@ -58,62 +66,114 @@
         </aside>
 
 
-        <!-- CONTENIDO -->
+        <!-- ===============================
+             CONTENIDO
+        ================================ -->
 
         <main class="contenido">
 
             <header class="header">
 
                 <div>
-                    <h1>¡Hola, Agustina! 👋</h1>
-                    <p>Bienvenida a tu panel de gestión.</p>
+
+                    <!-- EL NOMBRE SE CARGARÁ DESDE SUPABASE -->
+
+                    <h1 id="saludoUsuario">
+                        ¡Hola! 👋
+                    </h1>
+
+                    <p>
+                        Bienvenida a tu panel de gestión.
+                    </p>
+
                 </div>
 
-                <div class="usuario">
-                    👤 Agustina
+
+                <!-- USUARIO ACTUAL -->
+
+                <div class="usuario" id="usuarioNombre">
+                    👤 Cargando...
                 </div>
 
             </header>
 
 
-            <!-- INICIO -->
+            <!-- ===============================
+                 INICIO
+            ================================ -->
 
             <section id="inicio" class="seccion">
 
                 <h2>Resumen</h2>
 
+
                 <div class="tarjetas">
 
                     <div class="tarjeta">
+
                         <span>👥</span>
+
                         <div>
+
                             <p>Total clientes</p>
-                            <strong id="totalClientes">0</strong>
+
+                            <strong id="totalClientes">
+                                0
+                            </strong>
+
                         </div>
+
                     </div>
 
+
                     <div class="tarjeta">
+
                         <span>🔥</span>
+
                         <div>
+
                             <p>Interesados</p>
-                            <strong id="interesados">0</strong>
+
+                            <strong id="interesados">
+                                0
+                            </strong>
+
                         </div>
+
                     </div>
 
+
                     <div class="tarjeta">
+
                         <span>🟡</span>
+
                         <div>
+
                             <p>Seguimientos</p>
-                            <strong id="seguimientos">0</strong>
+
+                            <strong id="seguimientos">
+                                0
+                            </strong>
+
                         </div>
+
                     </div>
 
+
                     <div class="tarjeta">
+
                         <span>✅</span>
+
                         <div>
+
                             <p>Ventas</p>
-                            <strong id="ventas">0</strong>
+
+                            <strong id="ventas">
+                                0
+                            </strong>
+
                         </div>
+
                     </div>
 
                 </div>
@@ -121,7 +181,9 @@
 
                 <div class="bienvenida">
 
-                    <h2>CRM Fibra Óptica</h2>
+                    <h2>
+                        VANTIX CRM
+                    </h2>
 
                     <p>
                         Desde este panel vas a poder administrar tus clientes,
@@ -137,16 +199,26 @@
             </section>
 
 
-            <!-- CLIENTES -->
+            <!-- ===============================
+                 CLIENTES
+            ================================ -->
 
             <section id="clientes" class="seccion oculto">
 
                 <div class="titulo-seccion">
 
                     <div>
-                        <h2>Clientes</h2>
-                        <p>Administrá tus contactos.</p>
+
+                        <h2>
+                            Clientes
+                        </h2>
+
+                        <p>
+                            Administrá tus contactos.
+                        </p>
+
                     </div>
+
 
                     <button onclick="abrirFormulario()">
                         ➕ Agregar cliente
@@ -167,13 +239,20 @@
                 </div>
 
 
-                <div id="listaClientes" class="clientes-grid">
+                <div
+                    id="listaClientes"
+                    class="clientes-grid"
+                >
 
                     <div class="cliente-vacio">
 
-                        <div>👥</div>
+                        <div>
+                            👥
+                        </div>
 
-                        <h3>No hay clientes todavía</h3>
+                        <h3>
+                            No hay clientes todavía
+                        </h3>
 
                         <p>
                             Agregá tu primer cliente para comenzar.
@@ -186,11 +265,18 @@
             </section>
 
 
-            <!-- SEGUIMIENTO -->
+            <!-- ===============================
+                 SEGUIMIENTO
+            ================================ -->
 
-            <section id="seguimiento" class="seccion oculto">
+            <section
+                id="seguimiento"
+                class="seccion oculto"
+            >
 
-                <h2>🔥 Seguimiento</h2>
+                <h2>
+                    🔥 Seguimiento
+                </h2>
 
                 <p class="texto-ayuda">
                     Clientes que necesitan seguimiento.
@@ -201,11 +287,18 @@
             </section>
 
 
-            <!-- VENTAS -->
+            <!-- ===============================
+                 VENTAS
+            ================================ -->
 
-            <section id="ventas" class="seccion oculto">
+            <section
+                id="ventas"
+                class="seccion oculto"
+            >
 
-                <h2>✅ Ventas realizadas</h2>
+                <h2>
+                    ✅ Ventas realizadas
+                </h2>
 
                 <p class="texto-ayuda">
                     Acá aparecerán las ventas realizadas.
@@ -216,32 +309,71 @@
             </section>
 
 
-            <!-- ESTADÍSTICAS -->
+            <!-- ===============================
+                 ESTADÍSTICAS
+            ================================ -->
 
-            <section id="estadisticas" class="seccion oculto">
+            <section
+                id="estadisticas"
+                class="seccion oculto"
+            >
 
-                <h2>📊 Estadísticas</h2>
+                <h2>
+                    📊 Estadísticas
+                </h2>
+
 
                 <div class="estadisticas">
 
                     <div>
-                        <span>Clientes</span>
-                        <strong id="statClientes">0</strong>
+
+                        <span>
+                            Clientes
+                        </span>
+
+                        <strong id="statClientes">
+                            0
+                        </strong>
+
                     </div>
 
-                    <div>
-                        <span>Interesados</span>
-                        <strong id="statInteresados">0</strong>
-                    </div>
 
                     <div>
-                        <span>Seguimientos</span>
-                        <strong id="statSeguimientos">0</strong>
+
+                        <span>
+                            Interesados
+                        </span>
+
+                        <strong id="statInteresados">
+                            0
+                        </strong>
+
                     </div>
 
+
                     <div>
-                        <span>Ventas</span>
-                        <strong id="statVentas">0</strong>
+
+                        <span>
+                            Seguimientos
+                        </span>
+
+                        <strong id="statSeguimientos">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Ventas
+                        </span>
+
+                        <strong id="statVentas">
+                            0
+                        </strong>
+
                     </div>
 
                 </div>
@@ -253,20 +385,36 @@
     </div>
 
 
-    <!-- VENTANA AGREGAR CLIENTE -->
+    <!-- ===============================
+         VENTANA AGREGAR CLIENTE
+    ================================ -->
 
-    <div id="modal" class="modal oculto">
+    <div
+        id="modal"
+        class="modal oculto"
+    >
 
         <div class="modal-contenido">
 
             <div class="modal-header">
 
                 <div>
-                    <h2>➕ Nuevo cliente</h2>
-                    <p>Completá los datos del contacto.</p>
+
+                    <h2>
+                        ➕ Nuevo cliente
+                    </h2>
+
+                    <p>
+                        Completá los datos del contacto.
+                    </p>
+
                 </div>
 
-                <button class="cerrar-modal" onclick="cerrarFormulario()">
+
+                <button
+                    class="cerrar-modal"
+                    onclick="cerrarFormulario()"
+                >
                     ✕
                 </button>
 
@@ -277,60 +425,96 @@
 
                 <div class="form-grid">
 
+
+                    <!-- NOMBRE -->
+
                     <div>
-                        <label>Nombre y apellido</label>
+
+                        <label>
+                            Nombre y apellido
+                        </label>
 
                         <input
                             type="text"
                             id="nombre"
                             required
                         >
+
                     </div>
 
 
+                    <!-- TELÉFONO -->
+
                     <div>
-                        <label>Teléfono</label>
+
+                        <label>
+                            Teléfono
+                        </label>
 
                         <input
                             type="text"
                             id="telefono"
                             required
                         >
+
                     </div>
 
 
+                    <!-- DNI -->
+
                     <div>
-                        <label>DNI</label>
+
+                        <label>
+                            DNI
+                        </label>
 
                         <input
                             type="text"
                             id="dni"
                         >
+
                     </div>
 
 
+                    <!-- LOCALIDAD -->
+
                     <div>
-                        <label>Localidad</label>
+
+                        <label>
+                            Localidad
+                        </label>
 
                         <input
                             type="text"
                             id="localidad"
                         >
+
                     </div>
 
 
+                    <!-- DIRECCIÓN -->
+
                     <div>
-                        <label>Dirección</label>
+
+                        <label>
+                            Dirección
+                        </label>
 
                         <input
                             type="text"
                             id="direccion"
                         >
+
                     </div>
 
 
+                    <!-- PLAN -->
+
                     <div>
-                        <label>Plan</label>
+
+                        <label>
+                            Plan
+                        </label>
 
                         <select id="plan">
 
@@ -351,29 +535,34 @@
                     </div>
 
 
+                    <!-- ESTADO -->
+
                     <div>
-                        <label>Estado</label>
+
+                        <label>
+                            Estado
+                        </label>
 
                         <select id="estado">
 
-                            <option value="🔥 Caliente">
-                                🔥 Caliente
+                            <option value="🟡 Pendiente de verificación">
+                                🟡 Pendiente de verificación
                             </option>
 
-                            <option value="🟡 Seguimiento">
-                                🟡 Seguimiento
+                            <option value="🟢 Vendido">
+                                🟢 Vendido
                             </option>
 
-                            <option value="🟠 No responde">
-                                🟠 No responde
+                            <option value="🟠 No contesta">
+                                🟠 No contesta
                             </option>
 
-                            <option value="✅ Venta">
-                                ✅ Venta
+                            <option value="🔴 No pasa validación">
+                                🔴 No pasa validación
                             </option>
 
-                            <option value="❌ No interesado">
-                                ❌ No interesado
+                            <option value="🔵 Auditado">
+                                🔵 Auditado
                             </option>
 
                         </select>
@@ -381,9 +570,13 @@
                     </div>
 
 
+                    <!-- OBSERVACIONES -->
+
                     <div class="campo-completo">
 
-                        <label>Observaciones</label>
+                        <label>
+                            Observaciones
+                        </label>
 
                         <textarea
                             id="observaciones"
@@ -406,6 +599,17 @@
 
     </div>
 
+
+    <!-- ===============================
+         SUPABASE
+    ================================ -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <!-- ===============================
+         VANTIX
+    ================================ -->
 
     <script src="panel.js"></script>
 
